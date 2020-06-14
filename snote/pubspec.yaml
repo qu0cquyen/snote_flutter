@@ -31,6 +31,11 @@ dependencies:
   supercharged: ^1.6.0
   flutter_sequence_animation: ^3.0.1
   http: ^0.12.1
+  qr_flutter: ^3.1.0
+  shared_preferences: ^0.5.7+3
+  rxdart: ^0.24.1
+  image_picker: ^0.6.7
+  local_image_provider: ^2.1.0
 
 dev_dependencies:
   flutter_test:

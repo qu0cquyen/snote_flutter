@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart'; 
 import 'package:snote/models/global.dart'; 
-import 'package:snote/respository/user_repository.dart'; 
 import 'package:snote/models/classes/users.dart';
 
 class SignUpPage extends StatefulWidget{
   @override
   _SignUpState createState() => _SignUpState(); 
 }
-
-
 
 
 class _SignUpState extends State<SignUpPage>{
@@ -97,11 +94,11 @@ class _SignUpState extends State<SignUpPage>{
         onPressed: (){
           //print(usernameController.text);
           setState((){
-            user = registerUser(usernameController.text, passwordController.text, 
-                      firstnameController.text, lastnameController.text, emailController.text); 
-            user.then((result) => {
-              print(result.api_key)
-            });
+            // user = registerUser(usernameController.text, passwordController.text, 
+            //           firstnameController.text, lastnameController.text, emailController.text); 
+            // user.then((result) => {
+            //   print(result.api_key)
+            // });
           });
           
         },

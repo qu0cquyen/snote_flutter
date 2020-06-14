@@ -1,7 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../presentation/bottomNavigationBarIcons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snote/bloc/blocs/content_bloc_provider.dart';
+import 'package:snote/models/classes/contents.dart';
+import 'package:snote/models/widgets/content_box_widget.dart';
 import 'package:snote/models/global.dart';
+import 'package:snote/ui/content_page.dart';
 import 'package:snote/ui/personal_page.dart';
+import 'package:snote/ui/login_page.dart';
+import 'package:snote/bloc/blocs/user_bloc_provider.dart';
+import 'package:snote/ui/subscribed_page.dart';
+import 'package:snote/ui/texting_page.dart';
 
 class HomePage extends StatefulWidget{
   @override
@@ -10,6 +19,13 @@ class HomePage extends StatefulWidget{
 }
 
 class _HomePageState extends State<HomePage>{
+  String apiKey = ""; 
+  int _selectedIndex = 0; 
+  bool _showBottomSheet = false; 
+  ContentBloc contentBloc; 
+ 
+
+  PageController _pageController = new PageController(); 
 
   Widget _buildSearchBar(){
     return Container(
@@ -31,170 +47,201 @@ class _HomePageState extends State<HomePage>{
     );          
   }
 
-  List<Widget> _buildContentBox(){
-    List listContentBox = new List<Widget>(); 
-    for(int i = 0; i < 10; ++i){
-      listContentBox.add(
-        Container(
-          margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-          height: 180,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
-          ),
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 5,
-                child: Container(
-                  //height: 180/2,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(20), 
-                        topRight: const Radius.circular(20)),
-                      image: DecorationImage(
-                        image: AssetImage("images/banner.jpg"),
-                        fit: BoxFit.fill,
-                      ),
-                    ),                                           
-                  ),
-              ),
-              Expanded(
-                flex: 5,
-                child: Container(
-                  width: double.infinity, // Match_parent 
-                  padding: const EdgeInsets.all(10),                                             
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(20), 
-                      bottomRight: Radius.circular(20)),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 5,
-                            child:Text("Title", textAlign: TextAlign.left,),
-                          ),
-                          Expanded(
-                            flex: 5,
-                            child: Text("Rate", textAlign: TextAlign.right,),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Text("Description", textAlign: TextAlign.left,),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        )
-      );
-    }
-    return listContentBox; 
+  Widget _buildContentBox(BuildContext context, List<Content> contentList){
+    return ListView.builder(
+      itemCount: contentList.length,
+      itemBuilder: (BuildContext context, int index){
+        return InkWell(
+            onTap: (){
+              Navigator.push(context, CupertinoPageRoute(builder: (context) => ContentPage(apiKey: apiKey,)));
+            }, 
+            child: ContentBox(title: contentList[index].title, rate: contentList[index].rate, description: contentList[index].description),
+        );
+      }
+    );
   }
 
-  @override
-  Widget build(BuildContext context){
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-        home: DefaultTabController(
-          length: 5, 
-          child: Scaffold(
-            body: Stack(
+  Widget homeUIRender(){
+    contentBloc = ContentBloc(apiKey);
+    List<Widget> _widgetOptions = <Widget>[
+      SafeArea(
+        child: GestureDetector(
+          onTap: () => setState((){
+            _showBottomSheet = false; 
+          }),
+          child: SingleChildScrollView(
+            child: Column(
               children: <Widget>[
-                TabBarView(
-                  children: <Widget>[
-                    Container(
-                      child: SafeArea(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: <Widget>[
-                              // Search bar 
-                              _buildSearchBar(), 
-                              
-                              // List View                              
-                              Container(
-                                height: MediaQuery.of(context).size.height - 100,
-                                color: backgroundColor,
-                                child: ListView(
-                                  children: _buildContentBox(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      color: backgroundColor, 
-                    ),
-                    // Subscribers
-                    Container(
-                      color: Colors.greenAccent,
-                    ),
-                    // Add Content
-                     Container(
-                      color: Colors.red, 
-                    ),
-                    // Messenger
-                    Container(
-                      color: Colors.greenAccent,
-                    ),
-                    // Personal
-                     Container(
-                      child: PersonalPage(), 
-                    ),
-                  ],
+                // Search bar 
+                _buildSearchBar(), 
+                
+                // List View                              
+                Container(
+                  height: MediaQuery.of(context).size.height - 100,
+                  color: backgroundColor,
+                  child: StreamBuilder(
+                    stream: contentBloc.contents,
+                    builder: (context, snapshot){
+                      if(snapshot.hasData){
+                        return _buildContentBox(context, snapshot.data);
+                      }
+                      return SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: CircularProgressIndicator()
+                      );
+                    }, 
+                  ),
                 ),
               ],
             ),
-            bottomNavigationBar: Container(
+          ),
+        ),
+      ),
+
+      // Subscribers
+      Container(
+        child: SubScribePage(),
+      ),
+
+      // Add Content
+      // GestureDetector(
+      //   onTap: () {
+      //     showModalBottomSheet(
+      //       context: context, 
+      //       builder: (BuildContext context){
+      //         return Container(
+      //           color: Colors.grey[900], 
+      //           height: 250,
+      //         );
+      //       }
+      //     );
+      //   }
+      // ),
+
+      // Container(
+      //   child: GestureDetector(
+      //     onTap: (){
+            
+      //       showModalBottomSheet(
+      //         context: context, 
+      //         builder: (BuildContext context){
+      //           return Container(
+      //             color: Colors.grey[900],
+      //             height: 250,
+      //           );  
+      //         }
+      //       );
+      //     }
+      //   ),
+        
+      // ),
+      // Messenger
+      Container(
+        child: TextPage(),
+      ),
+      // Personal
+        Container(
+        child: PersonalPage(), 
+      ),
+    ];
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+          backgroundColor: backgroundColor,
+          body:  Center(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) => {
+                  setState((){
+                    _selectedIndex = index; 
+                    
+                    
+                  }),
+                },
+                children: _widgetOptions,
+              ),
+          ),
+          
+          bottomNavigationBar: Theme(
+            data: Theme.of(context).copyWith(canvasColor: backgroundColor), 
+            child: Container(
               decoration: BoxDecoration(
-                border: Border.all(
-                  width: 1, 
-                  color: Colors.grey[400], 
-                ),
-              ),           
-              child: TabBar(               
-                tabs: [
-                  Tab(
-                    icon: Icon(MyFlutterApp.home_outline),
-                  ), 
-
-                  Tab(
-                    icon: Icon(MyFlutterApp.star),
+                border: Border.all(width: 1, color: Colors.grey[400]),
+              ),
+              child: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                items: <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home), 
+                    title: Text("Home"),
                   ),
-
-                  Tab(
-                    icon: Icon(MyFlutterApp.add_to_photos), 
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.star), 
+                    title: Text("Subsciber"),
                   ),
-
-                  Tab(
-                    icon: Icon(MyFlutterApp.comment), 
+                  // BottomNavigationBarItem(
+                  //   icon: Icon(Icons.add_circle),
+                  //   title: Text("Add"),
+                    
+                  // ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.message),
+                    title: Text("Message"),
                   ),
-
-                  Tab(
-                    icon: Icon(MyFlutterApp.perm_identity), 
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.perm_identity), 
+                    title: Text("Personal"), 
                   ),
                 ],
-                indicatorColor: Colors.transparent,
-                labelColor: Colors.lightBlueAccent,
-                unselectedLabelColor: Colors.grey,
-
+                currentIndex: _selectedIndex,
+                selectedItemColor: Colors.lightBlueAccent,
+                unselectedItemColor: Colors.black12,
+                showUnselectedLabels: true,
+                onTap: _onItemTapped,
               ),
             ),
-            backgroundColor: backgroundColor,          
           ),
         ),
       
     );
   }
+
+  void _onItemTapped(int index){
+    setState((){
+      _selectedIndex = index; 
+      _pageController.animateToPage(_selectedIndex, duration: Duration(milliseconds: 500), curve: Curves.ease);
+    });
+  }
+
+  void login(){
+    setState((){
+      build(context);
+    });
+  }
+
+  Future getApiKey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userBloc.signinUser("", "", prefs.getString("API_Token"));
+    return prefs.getString("API_Token");
+  }
+
+  Future signinUser() async {
+    return getApiKey();
+  }
+
+  @override
+  Widget build(BuildContext context){
+    return FutureBuilder(
+      future: signinUser(),
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        if(snapshot.hasData){
+          apiKey = snapshot.data;
+        }
+        return apiKey.length > 0 ? homeUIRender() : LoginPage(login: login, newUser: false); 
+      },
+    );
+  }
+  
 }

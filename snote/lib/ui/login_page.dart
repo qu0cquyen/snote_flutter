@@ -3,11 +3,14 @@ import 'package:snote/ui/signup_page.dart';
 import 'package:snote/ui/home_page.dart';
 import 'package:snote/models/global.dart';
 import 'package:snote/models/classes/users.dart';
-import 'package:snote/respository/user_repository.dart'; 
+import 'package:snote/bloc/blocs/user_bloc_provider.dart';
+//import 'package:snote/respository/user_repository.dart'; 
 
 
 class LoginPage extends StatefulWidget{
-  LoginPage({Key key}) : super(key: key); 
+  final VoidCallback login; 
+  final bool newUser; 
+  LoginPage({Key key, this.login, this.newUser}) : super(key: key); 
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -19,6 +22,57 @@ class _LoginPageState  extends State<LoginPage> with TickerProviderStateMixin{
   Animation<double> _translateLeft; 
   Animation<double> _translateRight; 
   Animation<double> _translateY; 
+
+  //Username and Password Text Controller 
+  TextEditingController usernameController = new TextEditingController(); 
+  TextEditingController passwordController = new TextEditingController(); 
+
+  InputDecoration _usernameDecorator; 
+  InputDecoration _passwordDecorator; 
+
+  InputDecoration _usernameInputDecoration = new InputDecoration(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10), 
+    ),
+    hintText: "User name",
+    prefixIcon: Icon(Icons.person), 
+  );
+
+  InputDecoration _passwordInputDecoration = new InputDecoration(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10), 
+    ),
+    hintText: "Password",
+    prefixIcon: Icon(Icons.lock), 
+  );
+
+  InputDecoration _errorUsernameInputDecoration = new InputDecoration(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(
+        color: Colors.redAccent, 
+      ),
+    ),
+    hintText: "User name", 
+    labelText: "Required",
+    labelStyle: TextStyle(color: Colors.redAccent),
+    prefixIcon: Icon(Icons.person), 
+    suffixIcon: Icon(Icons.error_outline, color: Colors.redAccent), 
+  );
+
+  InputDecoration _errorPasswordInputDecoration = new InputDecoration(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(
+        color: Colors.redAccent, 
+      ),
+    ),
+    hintText: "Password", 
+    labelText: "Required",
+    labelStyle: TextStyle(color: Colors.redAccent),
+    prefixIcon: Icon(Icons.lock), 
+    suffixIcon: Icon(Icons.error_outline, color: Colors.redAccent), 
+  );
 
   // Animation 
   @override
@@ -38,9 +92,17 @@ class _LoginPageState  extends State<LoginPage> with TickerProviderStateMixin{
 
     controller.forward();
 
+    // Text Box Decoration setup
+    _usernameDecorator = _usernameInputDecoration; 
+    _passwordDecorator = _passwordInputDecoration; 
+  }
 
-    
-  
+  @override
+  void dispose(){
+    usernameController.dispose();
+    passwordController.dispose();
+    controller.dispose();
+    super.dispose();
   }
 
   Widget _pageAnimationX(Animation<double> animation, Widget child){
@@ -69,14 +131,16 @@ class _LoginPageState  extends State<LoginPage> with TickerProviderStateMixin{
       margin: const EdgeInsets.all(15),
       height: 52,
       child: TextFormField(
+        controller: usernameController, 
         textAlign: TextAlign.start,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          prefixIcon: Icon(Icons.person),
-          hintText: "User name",
-        ),
+        decoration: _usernameDecorator, 
+        // decoration: InputDecoration(
+        //   border: OutlineInputBorder(
+        //     borderRadius: BorderRadius.circular(10),
+        //   ),
+        //   prefixIcon: Icon(Icons.person),
+        //   hintText: "User name",
+        // ),
       ),
     );
   }
@@ -86,15 +150,17 @@ class _LoginPageState  extends State<LoginPage> with TickerProviderStateMixin{
       margin: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
       height: 52,
       child: TextFormField(
+        controller: passwordController,
         textAlign: TextAlign.start, 
         keyboardType: TextInputType.visiblePassword, 
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10), 
-          ),
-          prefixIcon: Icon(Icons.lock), 
-          hintText: "Password",
-        ),
+        decoration: _passwordDecorator, 
+        // decoration: InputDecoration(
+        //   border: OutlineInputBorder(
+        //     borderRadius: BorderRadius.circular(10), 
+        //   ),
+        //   prefixIcon: Icon(Icons.lock), 
+        //   hintText: "Password",
+        // ),
       ),
     ); 
   }
@@ -105,7 +171,7 @@ class _LoginPageState  extends State<LoginPage> with TickerProviderStateMixin{
       height: 52, 
       width: 180,
       child: RaisedButton(
-        onPressed: () => navigationSubPage(context, HomePage()),  // Check User Name and Password here 
+        onPressed: () => userLogin(usernameController.text, passwordController.text),  // Check User Name and Password here 
         elevation: 12.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -140,6 +206,34 @@ class _LoginPageState  extends State<LoginPage> with TickerProviderStateMixin{
     );
       
   
+  }
+
+  void userLogin(String username, String password){
+    if(username.length == 0){
+      setState((){
+        _usernameDecorator = _errorUsernameInputDecoration; 
+      });
+    } else { 
+      setState((){
+        _usernameDecorator = _usernameInputDecoration; 
+      });
+    }
+
+    if(password.length == 0){
+      setState((){
+        _passwordDecorator = _errorPasswordInputDecoration; 
+      });
+    } else {
+      setState((){
+        _passwordDecorator = _passwordInputDecoration;
+      });
+    }
+    
+    if(username.length > 0 && password.length > 0){
+      userBloc.signinUser(username, password, "").then( (_){
+        widget.login(); 
+      });
+    }
   }
 
   void navigationSubPage(BuildContext context, Widget child) async{

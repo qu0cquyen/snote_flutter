@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart'; 
 import 'package:snote/models/global.dart'; 
+import 'package:snote/ui/qr_page.dart';
 
 class PersonalPage extends StatefulWidget{
   @override
@@ -23,7 +25,6 @@ class _PersonalPageState extends State<PersonalPage>{
   Widget _buildBanner(){
     return Container(
         alignment: Alignment.topRight,
-        margin: const EdgeInsets.only(top: 25),
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage("images/cat_banner.png"),
@@ -153,7 +154,7 @@ class _PersonalPageState extends State<PersonalPage>{
     listSettings.add(
       ListTile(
         title: Text("QR Code"),
-        onTap: () => print("Open QR Code Page"),
+        onTap: () => navigationSubPage(context, QRPage()),
       ),
     );
 
@@ -173,13 +174,31 @@ class _PersonalPageState extends State<PersonalPage>{
       ),
     );
 
+    // Sign Out
+    listSettings.add(
+      ListTile(
+        title: Text("Sign out"), 
+        onTap: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance(); 
+          prefs.clear(); 
+          print(prefs.getString("API_Token"));
+        }
+      ),
+    );
+
     return listSettings; 
+  }
+
+  // Navigate to sub pages
+  void navigationSubPage(BuildContext context, Widget child) async {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => child)); 
   }
 
 
   @override
   Widget build(BuildContext context){
-    return Scaffold(
+    return SafeArea(
+      child: Scaffold(
         key: _scaffoldKey, 
         backgroundColor: backgroundColor,
         body: Column(
@@ -222,6 +241,7 @@ class _PersonalPageState extends State<PersonalPage>{
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 }
