@@ -1,22 +1,41 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' show Client;
+import 'dart:io';
+import 'package:http/http.dart' as http; 
 
 class UploadApiProvider{
-  Future uploadImage(String apiKey, Image filename) async{
-    final response = await Client().post("http://127.0.0.1:5000/api/upload", 
-                                      headers: {
-                                        "Authorization": apiKey, 
-                                      },
-                                      body:{
-                                        'name': filename, 
-                                      });
+  Future uploadImage(String apiKey, File filename) async{
+    var uri = "http://127.0.0.1:5000/api/upload"; 
+    var request = http.MultipartRequest('POST', Uri.parse(uri));
 
-    final Map result = json.decode(response.body); 
-    if(response.statusCode == 201){
-      print("Uploaded Success"); 
-    }
+    Map<String, String> header = {"Authorization": apiKey};
+    request.headers.addAll(header);
+
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'picture', 
+        filename.readAsBytesSync(), 
+        filename: filename.path.split("/").last),
+    );
+
+    var response = await request.send(); 
+
+    print(response.reasonPhrase);
+
+
+    // final response = await http.post("http://127.0.0.1:5000/api/upload", 
+    //                                   headers: {
+    //                                     "Authorization": apiKey, 
+    //                                   },
+    //                                   body: {
+    //                                     "picture": filename, 
+    //                                   });
+
+    // var response = await request.send(); 
+    // final Map result = json.decode(response.reasonPhrase); 
+    // if(response.statusCode == 201){
+    //   print(response.reasonPhrase); 
+    // }
   }
 }
 

@@ -11,3 +11,7 @@ TextStyle signUpStyle = TextStyle(color: Color(0xFF187CBD),
                                 fontSize: 20, 
                                 fontFamily: 'Avenir',
                                 fontWeight: FontWeight.bold);
+
+TextStyle addContentStyle = TextStyle(fontSize: 20, 
+                                      fontFamily: 'Avenir',
+                                      fontWeight: FontWeight.bold);

@@ -1,13 +1,13 @@
 import 'dart:convert'; 
 import 'dart:async';
-import 'package:http/http.dart' show Client; 
+import 'package:http/http.dart' as http; 
 import 'package:snote/models/classes/contents.dart';
 
 class ContentApiProvider{
   
   Future<List<Content>> getContent(String apiKey) async {
     List<Content> contents = [];
-    final response = await Client().get("http://127.0.0.1:5000/api/content", 
+    final response = await http.get("http://127.0.0.1:5000/api/content", 
                                       headers: {
                                         "Authorization": apiKey, 
                                       });

@@ -5,6 +5,7 @@ import 'package:snote/bloc/blocs/content_bloc_provider.dart';
 import 'package:snote/models/classes/contents.dart';
 import 'package:snote/models/widgets/content_box_widget.dart';
 import 'package:snote/models/global.dart';
+import 'package:snote/models/widgets/custom_button.dart';
 import 'package:snote/ui/content_page.dart';
 import 'package:snote/ui/personal_page.dart';
 import 'package:snote/ui/login_page.dart';
@@ -85,11 +86,8 @@ class _HomePageState extends State<HomePage>{
                       if(snapshot.hasData){
                         return _buildContentBox(context, snapshot.data);
                       }
-                      return SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: CircularProgressIndicator()
-                      );
+                      return CircularProgressIndicator();
+                      
                     }, 
                   ),
                 ),
@@ -105,6 +103,7 @@ class _HomePageState extends State<HomePage>{
       ),
 
       // Add Content
+      
       // GestureDetector(
       //   onTap: () {
       //     showModalBottomSheet(
@@ -155,15 +154,57 @@ class _HomePageState extends State<HomePage>{
                 controller: _pageController,
                 onPageChanged: (index) => {
                   setState((){
+                    // This helps modify the navigation bar selection.
                     _selectedIndex = index; 
-                    
-                    
+                    if(index > 1){
+                      _selectedIndex = index + 1;         
+                    }
+                       
                   }),
                 },
                 children: _widgetOptions,
               ),
           ),
-          
+
+          // Add function here 
+          floatingActionButton: new FloatingActionButton(
+            elevation: 0.0,
+            child: Icon(Icons.add), 
+            onPressed: (){
+              showModalBottomSheet(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                ), 
+                backgroundColor: backgroundColor,
+                context: context, 
+                builder: (context) => Container(
+                  height: 200, 
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Text("Add A New Note", style: addContentStyle), 
+                      CustomButton(btnContent: "Manually", btnWidth: 180, btnHeight: 42,),
+                      CustomButton(btnContent: "Upload", btnWidth: 180, btnHeight: 42,),
+                      // RaisedButton(
+                      //   child: Text("Manually"), 
+                      //   onPressed: (){} ,
+                      // ),
+                      // RaisedButton(
+                      //   child: Text("Upload"), 
+                      //   onPressed: (){},
+                      // ), 
+                    ],
+                  ),
+                ),
+              );
+            } // Add function 
+          ),
+
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
           bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(canvasColor: backgroundColor), 
             child: Container(
@@ -181,11 +222,11 @@ class _HomePageState extends State<HomePage>{
                     icon: Icon(Icons.star), 
                     title: Text("Subsciber"),
                   ),
-                  // BottomNavigationBarItem(
-                  //   icon: Icon(Icons.add_circle),
-                  //   title: Text("Add"),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.add, color: Colors.transparent),
+                    title: Text("Add"),
                     
-                  // ),
+                  ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.message),
                     title: Text("Message"),
@@ -198,7 +239,7 @@ class _HomePageState extends State<HomePage>{
                 currentIndex: _selectedIndex,
                 selectedItemColor: Colors.lightBlueAccent,
                 unselectedItemColor: Colors.black12,
-                showUnselectedLabels: true,
+                showUnselectedLabels: false,
                 onTap: _onItemTapped,
               ),
             ),
@@ -210,7 +251,9 @@ class _HomePageState extends State<HomePage>{
 
   void _onItemTapped(int index){
     setState((){
-      _selectedIndex = index; 
+      // Based on the tap position to choose the corresponding page in PageView [Widgets Options]
+      if(index > 1){index -= 1;} // Skip add page 
+      _selectedIndex = index;
       _pageController.animateToPage(_selectedIndex, duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
   }

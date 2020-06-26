@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'user_api.dart';
 import 'content_api.dart';
 import 'package:snote/models/classes/contents.dart';
@@ -18,5 +19,5 @@ class Respository{
   Future<List<Content>> getContent(String apiKey) => content_apiProvider.getContent(apiKey);
 
   // Upload
-  Future uploadImage(String apiKey, Image fileName) => uploadContent_apiProvider.uploadImage(apiKey, fileName);
+  Future uploadImage(String apiKey, File fileName) => uploadContent_apiProvider.uploadImage(apiKey, fileName);
 }

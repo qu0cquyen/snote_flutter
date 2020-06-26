@@ -1,16 +1,21 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:rxdart/rxdart.dart'; 
 import 'package:snote/bloc/resources/repository.dart'; 
 
 
 class UploadBloc{
   final _repository = Respository(); 
-  final _uploadSubject = PublishSubject<String>(); 
+  final _uploadSubject = PublishSubject<File>(); 
 
-  Stream<String> get upload => _uploadSubject.stream; 
+  Stream<File> get upload => _uploadSubject.stream; 
 
-  Future<Null> uploadImage(String apiKey, Image fileName) async {
+  Future uploadImage(String apiKey, File fileName) async {
+    print("Inside Bloc");
     return  _uploadSubject.sink.add(await _repository.uploadImage(apiKey, fileName)); 
+  }
+
+  void dispose(){
+    _uploadSubject.close(); 
   }
   
 }

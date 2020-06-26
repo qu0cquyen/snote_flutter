@@ -126,7 +126,7 @@ class _IntrayPageState extends State<IntrayPage>{
   Image _userImage; 
   File file; 
   void chooseImage() async {
-      final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery); 
+      var pickedFile = await ImagePicker().getImage(source: ImageSource.gallery); 
       
 
       setState((){
@@ -164,8 +164,11 @@ class _IntrayPageState extends State<IntrayPage>{
               ),
 
                 RaisedButton(
-                  onPressed:(){ 
-                    _uploadBloc.uploadImage(widget.apiKey, _userImage);
+                  onPressed:() { 
+                    print("Getting here");
+                    //print(file); 
+                    _uploadBloc.uploadImage(widget.apiKey, file);
+                    
                   }, 
                   child: Text("Upload Image"),
                 ),
