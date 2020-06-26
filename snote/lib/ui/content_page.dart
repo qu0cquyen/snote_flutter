@@ -150,7 +150,6 @@ class _IntrayPageState extends State<IntrayPage>{
             backgroundColor: backgroundColor,
             leading: Icon(Icons.arrow_back_ios, color: Colors.black), 
             actions: <Widget>[
-              
               Icon(Icons.favorite_border, color: Colors.black),
               SizedBox(width: 10,),
 
