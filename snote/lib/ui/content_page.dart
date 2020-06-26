@@ -7,8 +7,10 @@ import 'package:snote/models/global.dart';
 
 class ContentPage extends StatefulWidget{
   final String apiKey; 
+  final String title; 
+  final Image bannerImg; 
   
-  ContentPage({Key key, this.apiKey}) : super(key: key);
+  ContentPage({Key key, this.apiKey, @required this.title, this.bannerImg}) : super(key: key);
 
   @override
   _ContentPageState createState() => _ContentPageState(); 
@@ -122,7 +124,7 @@ class _IntrayPageState extends State<IntrayPage>{
 
 }";""";
 
-  UploadBloc _uploadBloc; 
+  UploadBloc uploadBloc = new UploadBloc(); 
   Image _userImage; 
   File file; 
   void chooseImage() async {
@@ -141,44 +143,75 @@ class _IntrayPageState extends State<IntrayPage>{
 
   @override
   Widget build(BuildContext context){
+    print(widget.bannerImg);
     return Scaffold(
           backgroundColor: backgroundColor, 
+          appBar: AppBar(
+            backgroundColor: backgroundColor,
+            leading: Icon(Icons.arrow_back_ios, color: Colors.black), 
+            actions: <Widget>[
+              
+              Icon(Icons.favorite_border, color: Colors.black),
+              SizedBox(width: 10,),
+
+            ],
+            title: Center(
+              child: Container(
+                child: Text(widget.title, style: TextStyle(color: Colors.black)),
+              ),
+            ), 
+          ),
           body: SafeArea(
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                  Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
+                  // Banner Image 
                   Container(
-                    width: 100, 
-                    height: 100, 
-                    child: _userImage,
-                    ),
-                   
-                  RaisedButton(
-                    onPressed: chooseImage,
-                    child: Text("Choose Image"),
+                    child: widget.bannerImg,
+                  ),
+
+                  // Main Contents 
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(txt),
                   ),
                 ],
-              ),
 
-                RaisedButton(
-                  onPressed:() { 
-                    print("Getting here");
-                    //print(file); 
-                    _uploadBloc.uploadImage(widget.apiKey, file);
+
+
+              //   children: <Widget>[
+              //     Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: <Widget>[
+              //     Container(
+              //       width: 100, 
+              //       height: 100, 
+              //       child: _userImage,
+              //       ),
+                   
+              //     RaisedButton(
+              //       onPressed: chooseImage,
+              //       child: Text("Choose Image"),
+              //     ),
+              //   ],
+              // ),
+
+              //   RaisedButton(
+              //     onPressed:() { 
+              //       print("Getting here");
+              //       //print(file); 
+              //       uploadBloc.uploadImage(widget.apiKey, file);
                     
-                  }, 
-                  child: Text("Upload Image"),
-                ),
-                ],
-              ), 
+              //     }, 
+              //     child: Text("Upload Image"),
+              //   ),
+              //   ],
+              // ), 
                 
               
               ),
             ),
-        
+          ),
       
     );
   }

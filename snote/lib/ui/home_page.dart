@@ -54,7 +54,14 @@ class _HomePageState extends State<HomePage>{
       itemBuilder: (BuildContext context, int index){
         return InkWell(
             onTap: (){
-              Navigator.push(context, CupertinoPageRoute(builder: (context) => ContentPage(apiKey: apiKey,)));
+              Navigator.push(context, CupertinoPageRoute(
+                  builder: (context) => ContentPage(
+                    apiKey: apiKey, 
+                    title: contentList[index].title,
+                    bannerImg: Image.asset("images/banner.jpg")
+                  )
+                )
+              );
             }, 
             child: ContentBox(title: contentList[index].title, rate: contentList[index].rate, description: contentList[index].description),
         );

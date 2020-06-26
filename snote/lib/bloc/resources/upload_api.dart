@@ -18,8 +18,11 @@ class UploadApiProvider{
         filename: filename.path.split("/").last),
     );
 
+    print(request);
+
     var response = await request.send(); 
 
+    print("We are in the api");
     print(response.reasonPhrase);
 
 
