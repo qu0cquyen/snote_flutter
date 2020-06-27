@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
-import 'package:http/http.dart' as http; 
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart'; 
 
 class UploadApiProvider{
   Future uploadImage(String apiKey, File filename) async{
@@ -39,6 +40,25 @@ class UploadApiProvider{
     // if(response.statusCode == 201){
     //   print(response.reasonPhrase); 
     // }
+  }
+
+  Future<File> getImage(String apiKey) async{
+    File imageFile; 
+    final response = await http.get("http://127.0.0.1:5000/api/upload", 
+                                    headers: {
+                                      "Authorization": apiKey, 
+                                    }); 
+
+    Directory tempDir = await getTemporaryDirectory(); 
+    String tempPath = tempDir.path; 
+    imageFile = new File('$tempPath/test.jpg'); 
+
+    return await imageFile.writeAsBytes(response.bodyBytes);
+
+    
+    
+
+    
   }
 }
 

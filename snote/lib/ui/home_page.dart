@@ -54,6 +54,9 @@ class _HomePageState extends State<HomePage>{
       itemBuilder: (BuildContext context, int index){
         return InkWell(
             onTap: (){
+              setState((){
+                _showBottomSheet = false; 
+              });
               Navigator.push(context, CupertinoPageRoute(
                   builder: (context) => ContentPage(
                     apiKey: apiKey, 
@@ -62,6 +65,7 @@ class _HomePageState extends State<HomePage>{
                   )
                 )
               );
+              
             }, 
             child: ContentBox(title: contentList[index].title, rate: contentList[index].rate, description: contentList[index].description),
         );
@@ -192,17 +196,18 @@ class _HomePageState extends State<HomePage>{
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Text("Add A New Note", style: addContentStyle), 
+                      // As a divider on the very top of bottom sheet
+                      Center(
+                        child: Container(
+                          width: 50,
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1, color: Colors.black12),
+                          ), 
+                        ),
+                      ), 
+                      addANewNote,
                       CustomButton(btnContent: "Manually", btnWidth: 180, btnHeight: 42,),
                       CustomButton(btnContent: "Upload", btnWidth: 180, btnHeight: 42,),
-                      // RaisedButton(
-                      //   child: Text("Manually"), 
-                      //   onPressed: (){} ,
-                      // ),
-                      // RaisedButton(
-                      //   child: Text("Upload"), 
-                      //   onPressed: (){},
-                      // ), 
                     ],
                   ),
                 ),

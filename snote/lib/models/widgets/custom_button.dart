@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'; 
+import 'package:snote/models/global.dart';
+import 'package:snote/ui/writing_page.dart';
 
 class CustomButton extends StatelessWidget{
   final String btnContent; 
@@ -14,12 +17,20 @@ class CustomButton extends StatelessWidget{
       height: btnHeight, 
       width: btnWidth,
       child: RaisedButton(
-        onPressed: () => {},  
+        onPressed: () => {
+          if(btnContent == "Manually"){
+            Navigator.pop(context), 
+            Navigator.push(context, CupertinoPageRoute(
+                builder: (context) => WritingPage(), 
+              )
+            )
+          }
+        },  
         elevation: 12.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: Color(0xFF187CBD),
+        color: btnBackgroundColor,
         child: Text(
           btnContent,  
           style: TextStyle(

@@ -148,7 +148,10 @@ class _IntrayPageState extends State<IntrayPage>{
           backgroundColor: backgroundColor, 
           appBar: AppBar(
             backgroundColor: backgroundColor,
-            leading: Icon(Icons.arrow_back_ios, color: Colors.black), 
+            leading: InkWell(
+              child: Icon(Icons.arrow_back_ios, color: Colors.black),
+              onTap: () => Navigator.pop(context),
+            ), 
             actions: <Widget>[
               Icon(Icons.favorite_border, color: Colors.black),
               SizedBox(width: 10,),
@@ -163,54 +166,71 @@ class _IntrayPageState extends State<IntrayPage>{
           body: SafeArea(
             child: SingleChildScrollView(
               child: Column(
-                children: <Widget>[
-                  // Banner Image 
-                  Container(
-                    child: widget.bannerImg,
-                  ),
+                // children: <Widget>[
+                //   // Banner Image 
+                //   Container(
+                //     child: widget.bannerImg,
+                //   ),
 
-                  // Main Contents 
+                  
+
+                //   // Main Contents 
+                //   // Container(
+                //   //   padding: const EdgeInsets.all(10),
+                //   //   child: Text(txt),
+                //   // ),
+                // ],
+
+
+
+                children: <Widget>[
+                  Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
                   Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Text(txt),
+                    width: 100, 
+                    height: 100, 
+                    child: _userImage,
+                    ),
+                   
+                  RaisedButton(
+                    onPressed: chooseImage,
+                    child: Text("Choose Image"),
                   ),
                 ],
+              ),
 
-
-
-              //   children: <Widget>[
-              //     Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //   children: <Widget>[
-              //     Container(
-              //       width: 100, 
-              //       height: 100, 
-              //       child: _userImage,
-              //       ),
-                   
-              //     RaisedButton(
-              //       onPressed: chooseImage,
-              //       child: Text("Choose Image"),
-              //     ),
-              //   ],
-              // ),
-
-              //   RaisedButton(
-              //     onPressed:() { 
-              //       print("Getting here");
-              //       //print(file); 
-              //       uploadBloc.uploadImage(widget.apiKey, file);
+                RaisedButton(
+                  onPressed:() { 
+                    print("Getting here");
+                    //print(file); 
+                    //uploadBloc.uploadImage(widget.apiKey, file);
                     
-              //     }, 
-              //     child: Text("Upload Image"),
-              //   ),
-              //   ],
-              // ), 
+                  }, 
+                  child: Text("Upload Image"),
+                ),
+
+                FutureBuilder(
+                  future: uploadBloc.getImage(widget.apiKey),
+                  builder: (context, snapshot){
+                    if(snapshot.hasData){
+                      return Container(
+                        child: Image.file(snapshot.data),
+                      );
+                    } else{
+                      print("NO DATA");
+                    }
+                    return Container(); 
+                  }
+                ),
+                
+                ],
+              ), 
                 
               
               ),
             ),
-          ),
+          //),
       
     );
   }
