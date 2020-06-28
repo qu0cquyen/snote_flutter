@@ -22,7 +22,7 @@ class Respository{
   Future uploadImage(String apiKey, File fileName) => uploadContent_apiProvider.uploadImage(apiKey, fileName);
   
   // Download files 
-  Future<File> getImage(String apiKey) => uploadContent_apiProvider.getImage(apiKey);
+  Future<File> getImage(String apiKey, String imgPath) => uploadContent_apiProvider.getImage(apiKey, imgPath);
 
   
 }

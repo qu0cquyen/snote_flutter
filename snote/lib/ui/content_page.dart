@@ -210,19 +210,19 @@ class _IntrayPageState extends State<IntrayPage>{
                   child: Text("Upload Image"),
                 ),
 
-                FutureBuilder(
-                  future: uploadBloc.getImage(widget.apiKey),
-                  builder: (context, snapshot){
-                    if(snapshot.hasData){
-                      return Container(
-                        child: Image.file(snapshot.data),
-                      );
-                    } else{
-                      print("NO DATA");
-                    }
-                    return Container(); 
-                  }
-                ),
+                // FutureBuilder(
+                //   future: uploadBloc.getImage(widget.apiKey),
+                //   builder: (context, snapshot){
+                //     if(snapshot.hasData){
+                //       return Container(
+                //         child: Image.file(snapshot.data),
+                //       );
+                //     } else{
+                //       print("NO DATA");
+                //     }
+                //     return Container(); 
+                //   }
+                // ),
                 
                 ],
               ), 

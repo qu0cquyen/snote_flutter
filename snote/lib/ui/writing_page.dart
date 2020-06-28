@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:snote/models/global.dart';
 import 'package:zefyr/zefyr.dart';
 import 'package:snote/util/myapp_zefyrimage.dart';
-import 'package:snote/models/widgets/custom_button.dart';
 
 
 class WritingPage extends StatefulWidget{
@@ -30,6 +29,12 @@ class _WritingPageState extends State<WritingPage>{
     _controller = ZefyrController(document); 
     
     _focusNode = FocusNode(); 
+  }
+
+  @override
+  void dispose(){
+    _controller.dispose(); 
+    super.dispose();
   }
 
   /// Loads the document to be edited in Zefyr
@@ -74,83 +79,95 @@ class _WritingPageState extends State<WritingPage>{
           ],
         ),
         body: SafeArea(
-          child: ZefyrScaffold(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Expanded(
-                  flex: 0, 
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    child: TextFormField(
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25), 
-                      decoration: InputDecoration(
-                        hintText: "Title", 
-                        hintStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                      ),
-                    ),
-                  ),             
-                ),
-
-               
-                
-                Expanded(
-                  flex: 2, 
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.only(left: 20), 
-                        child: Text("Banner Image: "), 
-                      ),
-                      
-                      Container(
-                        width: 80, 
-                        height: 30,
-                        child: RaisedButton(
-                          onPressed: _browseFile, 
-                          child: btnBrowseLabel, 
-                          color: btnBackgroundColor, 
+            child: ZefyrScaffold(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                    flex: 1, 
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: TextFormField(
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25), 
+                        decoration: InputDecoration(
+                          hintText: "Title", 
+                          hintStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                         ),
                       ),
-                      
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 20),
-                    child: Text(imageName), 
-                  ),
-                ),
-
-                Expanded(
-                  flex: 9,
-                  
-                  // child: Container(
-                  //   margin: const EdgeInsets.all(10),
-                  //   decoration: BoxDecoration(
-                  //     border: Border.all(width: 1),
-                  //   ),
-
-                    child: ZefyrEditor(
-                      padding: const EdgeInsets.all(16),
-                      controller: _controller, 
-                      focusNode: _focusNode,
-                      imageDelegate: MyAppZefyrImageDelegate(),
-
+                    ),      
+                  ), 
+                           
+                  Expanded(
+                    flex: 2, 
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.only(left: 20), 
+                          child: Text("Banner Image: "), 
+                        ),
+                        
+                        Container(
+                          width: 80, 
+                          height: 30,
+                          child: RaisedButton(
+                            onPressed: _browseFile, 
+                            child: btnBrowseLabel, 
+                            color: btnBackgroundColor, 
+                          ),
+                        ),
+                        
+                      ],
                     ),
+                  ),
+
+                
+                  Expanded(
+                    flex: 0, 
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 20),
+                      child: Text(imageName), 
+                    ),
+                  ),
+
+                  Expanded(
+                    flex: 10, 
+                    // child: Container(
+                    //   margin: const EdgeInsets.all(10),
+                    //   decoration: BoxDecoration(
+                    //     border: Border.all(width: 1),
+                    //   ),
+                    child: Container(
+                      margin: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1, color: Colors.black12),
+                      ),
+                      child: ZefyrEditor(
+                      padding: const EdgeInsets.only(left: 10),
+                        controller: _controller, 
+                        focusNode: _focusNode,
+                        imageDelegate: MyAppZefyrImageDelegate(),
+
+                      ),
+                    ),
+                    
                     
 
 
-                  //), 
-                ),
-                
-              ],
-            ),
-        ),
+                    //), 
+                  ),
+                  
+
+                    
+
+
+                    
+                  
+                  
+                ],
+              ),
+          ),
+        
       ),
-      
     );  
   }
 }

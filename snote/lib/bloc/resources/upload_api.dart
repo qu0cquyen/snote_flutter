@@ -42,12 +42,14 @@ class UploadApiProvider{
     // }
   }
 
-  Future<File> getImage(String apiKey) async{
+  Future<File> getImage(String apiKey, String imgPath) async{
     File imageFile; 
     final response = await http.get("http://127.0.0.1:5000/api/upload", 
                                     headers: {
                                       "Authorization": apiKey, 
+                                      "imgPath": imgPath, 
                                     }); 
+                        
 
     Directory tempDir = await getTemporaryDirectory(); 
     String tempPath = tempDir.path; 

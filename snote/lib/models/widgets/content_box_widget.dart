@@ -1,14 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class ContentBox extends StatelessWidget{
   final String title; 
   final String description; 
   final double rate;
+  final File bannerImg; 
 
-  const ContentBox({Key key, this.title, this.description, this.rate}) : super(key: key); 
+  const ContentBox({Key key, this.title, this.description, this.rate, this.bannerImg}) : super(key: key); 
 
   @override
   Widget build(BuildContext context){
+   
     return Container(
         margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
         height: 180,
@@ -27,10 +31,11 @@ class ContentBox extends StatelessWidget{
                       topLeft: const Radius.circular(20), 
                       topRight: const Radius.circular(20)),
                     image: DecorationImage(
-                      image: AssetImage("images/banner.jpg"),
+                      image: bannerImg == null ? AssetImage("images/banner.jpg") : FileImage(bannerImg),
                       fit: BoxFit.fill,
                     ),
-                  ),                                           
+                  ),  
+                  //child: Image.file(bannerImg),            
                 ),
             ),
             Expanded(

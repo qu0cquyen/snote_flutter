@@ -16,13 +16,13 @@ class UploadBloc{
     return  _uploadSubject.sink.add(await _repository.uploadImage(apiKey, fileName)); 
   }
 
-  Future<File> getImage(String apiKey) async{
+  Future<File> getImage(String apiKey, String imgPath) async{
     File imgFile; 
 
 
     //return await _repository.getImage(apiKey);
     print("Inside Bloc get Image");
-    imgFile = await _repository.getImage(apiKey); 
+    imgFile = await _repository.getImage(apiKey, imgPath); 
     _getImageSubject.sink.add(imgFile); 
     
     //print(imgFile);

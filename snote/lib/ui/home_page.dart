@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snote/bloc/blocs/content_bloc_provider.dart';
+import 'package:snote/bloc/blocs/upload_bloc.dart';
 import 'package:snote/models/classes/contents.dart';
 import 'package:snote/models/widgets/content_box_widget.dart';
 import 'package:snote/models/global.dart';
@@ -48,27 +51,47 @@ class _HomePageState extends State<HomePage>{
     );          
   }
 
+  Future<File> _getImage(String imgPath) async {
+    //print(imgPath);
+    UploadBloc _uploadBloc = new UploadBloc(); 
+    //print(imgPath);
+    if(imgPath != null) {
+      //return Image.file(await _uploadBloc.getImage(apiKey, imgPath)); 
+      return await _uploadBloc.getImage(apiKey, imgPath);
+    }
+    return null; 
+  }
+
   Widget _buildContentBox(BuildContext context, List<Content> contentList){
     return ListView.builder(
       itemCount: contentList.length,
       itemBuilder: (BuildContext context, int index){
-        return InkWell(
-            onTap: (){
-              setState((){
-                _showBottomSheet = false; 
-              });
-              Navigator.push(context, CupertinoPageRoute(
+        if(contentList[index].content_img == ""){
+          contentList[index].content_img = null; 
+        }
+
+        return FutureBuilder(
+          future: _getImage(contentList[index].content_img),
+          builder: (BuildContext context, AsyncSnapshot snapshot){
+            return InkWell(
+              onTap: (){
+                Navigator.push(context, CupertinoPageRoute(
                   builder: (context) => ContentPage(
-                    apiKey: apiKey, 
-                    title: contentList[index].title,
-                    bannerImg: Image.asset("images/banner.jpg")
+                      apiKey: apiKey, 
+                      title: contentList[index].title,
+                      bannerImg: Image.asset("images/banner.jpg"), 
+                    ),
                   )
-                )
-              );
-              
-            }, 
-            child: ContentBox(title: contentList[index].title, rate: contentList[index].rate, description: contentList[index].description),
-        );
+                );
+              },
+              child: ContentBox(
+                title: contentList[index].title, 
+                rate: contentList[index].rate, 
+                description: contentList[index].description,
+                bannerImg: snapshot.data,),
+            );
+          }
+        ); 
       }
     );
   }
